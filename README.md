@@ -1,1 +1,1 @@
-# wd-201-javascript
+# wd-201-django
