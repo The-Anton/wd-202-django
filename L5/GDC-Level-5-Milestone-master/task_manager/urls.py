@@ -1,5 +1,7 @@
 from django.contrib import admin
+
 from django.urls import path
+
 from tasks.views import delete_task_view, task_view, add_task_view, delete_task_view, completed_task_view, done_task_view, all_task_view
 
 urlpatterns = [
