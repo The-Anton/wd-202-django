@@ -3,12 +3,12 @@
 <h2>All Incompleted Tasks</h2>
 
 {% for task in tasks %} 
-<li>{{task}}</li>
+<li>{{task.title}} - {{task.created_date}}</li>
 {% endfor %}
 
 <h2>All Completed Tasks</h2>
 
 {% for task in completed_tasks %} 
-<li>{{task}}</li>
+<li>{{task.title}} - {{task.created_date}}</li>
 {% endfor %}
 
