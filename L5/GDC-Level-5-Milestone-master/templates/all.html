@@ -1,0 +1,14 @@
+<h1>Tasks Management Application</h1>
+
+<h2>All Incompleted Tasks</h2>
+
+{% for task in tasks %} 
+<li>{{task}}</li>
+{% endfor %}
+
+<h2>All Completed Tasks</h2>
+
+{% for task in completed_tasks %} 
+<li>{{task}}</li>
+{% endfor %}
+
