@@ -1,29 +1,39 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 
-tasks = []
+from tasks.models import Task
+
 completed_tasks = []
+tasks = []
 
 def task_view(request):
+    tasks = Task.objects.filter(deleted=False)
+    search_term = request.GET.get("search")
+
+    if search_term:
+        tasks = tasks.filter(title__icontains=search_term)
     return render(request, "tasks.html", {"tasks": tasks})
 
 def add_task_view(request):
     task_value = request.GET.get("task")
+    Task(title=task_value).save()
     tasks.append(task_value)
     return HttpResponseRedirect("/tasks")
 
 def delete_task_view(request, index):
-    del tasks[index-1]
+    Task.objects.filter(id=index).update(deleted=True)
     return HttpResponseRedirect("/tasks")
 
 def done_task_view(request, index):
-    done_task = tasks.pop(index-1)
-    completed_tasks.append(done_task)
+    Task.objects.filter(id=index).update(completed=True)
     return HttpResponseRedirect("/tasks")
 
 def completed_task_view(request):
-    return render(request, "completed.html", {"completed_task": completed_tasks})
+    completed_tasks = Task.objects.all().filter(completed=True)
+    return render(request, "completed.html", {"completed_tasks": completed_tasks})
 
 def all_task_view(request):
+    tasks = Task.objects.filter(deleted=False)
+    completed_tasks = Task.objects.all().filter(completed=True)
     return render(request, "all.html", {"tasks": tasks, "completed_tasks": completed_tasks})
 
