@@ -8,7 +8,7 @@ def task_view(request):
     return render(request, "tasks.html", {"tasks": tasks})
 
 def add_task_view(request):
-    task_value = request.GET.get("tasks")
+    task_value = request.GET.get("task")
     tasks.append(task_value)
     return HttpResponseRedirect("/tasks")
 
@@ -18,11 +18,12 @@ def delete_task_view(request, index):
 
 def done_task_view(request, index):
     done_task = tasks.pop(index-1)
-    completed_tasks.push(done_task)
+    completed_tasks.append(done_task)
+    return HttpResponseRedirect("/tasks")
 
 def completed_task_view(request):
     return render(request, "completed.html", {"completed_task": completed_tasks})
 
 def all_task_view(request):
-    return render(request, "report.html", {"tasks": tasks, "completed_tasks": completed_tasks})
+    return render(request, "all.html", {"tasks": tasks, "completed_tasks": completed_tasks})
 
