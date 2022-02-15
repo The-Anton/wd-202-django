@@ -1,0 +1,7 @@
+<h1>Tasks Management Application</h1>
+
+<h2>All Completed Tasks</h2>
+
+{% for task in completed_tasks %} 
+<li> {{task.title}} - {{task.created_date}} </li>
+{% endfor %}
