@@ -7,9 +7,12 @@ from tasks.views import (GenericTaskCreateView, GenericTaskDeleteView,
                          all_task_view, completed_task_view, done_task_view,
                          sessions_storage_view)
 
+from tasks.apiviews import TaskListAPI
+
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("tasks/", GenericTaskView.as_view()),
+    path("taskapi/", TaskListAPI.as_view()),
     path("create-task/", GenericTaskCreateView.as_view()),
     path("update-task/<pk>", GenericTaskUpdateView.as_view()),
     path("detail-task/<pk>", GenericTaskDetailView.as_view()),
