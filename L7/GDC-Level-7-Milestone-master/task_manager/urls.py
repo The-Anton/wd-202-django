@@ -8,6 +8,12 @@ from tasks.views import (GenericTaskCreateView, GenericTaskDeleteView,
                          sessions_storage_view)
 
 from tasks.apiviews import TaskListAPI
+from rest_framework.routers import SimpleRouter
+from tasks.apiviews import TaskViewSet
+
+router = SimpleRouter()
+
+router.register("api/task", TaskViewSet)
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -25,5 +31,4 @@ urlpatterns = [
     path("all_tasks/", all_task_view),
     path("sessiontest/", sessions_storage_view),
 
-
-]
+] + router.urls
