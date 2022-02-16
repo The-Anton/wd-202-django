@@ -67,7 +67,7 @@ class GenericTaskCreateView(CreateView):
         self.object.user = self.request.user
         self.object.save()
         return HttpResponseRedirect(self.get_success_url())
-class GenericTaskView(LoginRequiredMixin.ListView):
+class GenericTaskView(LoginRequiredMixin, ListView):
     queryset = Task.objects.filter(deleted=False)
     template_name = "tasks.html"
     context_object_name = "tasks"
