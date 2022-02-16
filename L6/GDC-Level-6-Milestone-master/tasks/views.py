@@ -1,16 +1,23 @@
 from re import template
+from urllib import request
+
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.views import LoginView
 from django.forms import ModelForm, ValidationError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.views import View
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.views import LoginView
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
+from django.views.generic.list import ListView
 
 from tasks.models import Task
 
+
+class AuthorisedTaskManager(LoginRequiredMixin):
+    def get_queryset(self):
+        return Task.objects.filter(deleted=False, user=self.request.user)
 class UserLoginView(LoginView):
     template_name = "user_login.html"
 class UserCreateView(CreateView):
@@ -22,7 +29,8 @@ def sessions_storage_view(request):
 
     total_views = request.session.get("total_views",0)
     request.session['total_views'] = total_views + 1
-    return HttpResponse(f"Total Views is {total_views}")
+    return HttpResponse(f"Total Views is {total_views} an the user is {request.user}")
+
 class TaskCreateFrom(ModelForm):
 
     def clean_title(self):
@@ -35,32 +43,39 @@ class TaskCreateFrom(ModelForm):
         model = Task
         fields = ["title", "description", "completed"]
 
-class GenericTaskDeleteView(DeleteView):
+class GenericTaskDeleteView(AuthorisedTaskManager, DeleteView):
     model = Task
     template_name = "task_delete.html"
     success_url = "/tasks"
-class GenericDetailTaskView(DetailView):
+
+class GenericTaskDetailView(AuthorisedTaskManager, DetailView):
     model = Task
     template_name = "task_detail.html"
-class GenericUpdateTaskView(UpdateView):
+class GenericTaskUpdateView(AuthorisedTaskManager, UpdateView):
     model = Task
     form_class = TaskCreateFrom
     template_name = "task_update.html"
     success_url = "/tasks"
-class GenericCreateTaskView(CreateView):
-    model = TaskCreateFrom
-    fields = ("title", "description", "completed")
+
+class GenericTaskCreateView(CreateView):
+    form_class = TaskCreateFrom
     template_name = "task_create.html"
     success_url = "/tasks"
-class GenericTaskView(ListView):
-    model = Task.objects.filter(deleted=False)
+
+    def form_valid(self, form):
+        self.object = form.save()
+        self.object.user = self.request.user
+        self.object.save()
+        return HttpResponseRedirect(self.get_success_url())
+class GenericTaskView(LoginRequiredMixin.ListView):
+    queryset = Task.objects.filter(deleted=False)
     template_name = "tasks.html"
     context_object_name = "tasks"
     paginate_by = 5
 
     def get_queryset(self):
         search_term = self.request.GET.get("search")
-        tasks = Task.objects.filter(deleted=False)
+        tasks = Task.objects.filter(deleted=False, user=self.request.user)
 
         if search_term:
             tasks = tasks.filter(title__icontains=search_term)
