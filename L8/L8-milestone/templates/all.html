@@ -1,0 +1,40 @@
+{% extends 'task_base.html' %}
+
+{% block wrapper %}
+<p class="my-5 mx-5 text-slate-500">Total {{tasks | length}} tasks</p>
+
+<div class="flex justify-around items-center">
+    <a class="px-7 py-2 rounded-3xl bg-red-200 text-red-500 hover:bg-red-400 hover:text-red-700" href="/all_tasks">All</a>
+    <a class="px-6 py-2 font-bold rounded-3xl hover:bg-red-200 hover:text-red-500" href="/tasks/">Pending</a>
+    <a class="px-6 py-2 font-bold rounded-3xl hover:bg-red-200 hover:text-red-500" href="/completed_task/">Completed</a>
+</div>
+
+{% for task in tasks %} 
+<div class="flex justify-between m-3 p-5 rounded-2xl bg-slate-100">
+    {% if task.completed %}
+        <div class="flex-col">
+            <h2 class="text-lg font-bold text-red-600 line-through" href="/detail-task/{{task.id}}">{{task.title}}</h2>
+            <h4 class="text-base font-bold text-slate-500">{{task.created_date|date:"D d M"}}</h4>
+        </div> 
+    {% else %}
+        <div class="flex-col">
+            <h2 class="text-lg font-bold" href="/detail-task/{{task.id}}">{{task.title}}</h2>
+            <h4 class="text-base font-bold text-slate-500">{{task.created_date|date:"D d M"}}</h4>
+        </div>
+    {% endif %}
+        <div class="flex justify-between">
+            <a class="bg-green-500 hover:bg-green-600 m-1 p-4 rounded-xl self-center justify-self-center" href="/update-task/{{task.id}}">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M14.1667 2.5C14.3856 2.28113 14.6455 2.10752 14.9314 1.98906C15.2174 1.87061 15.5239 1.80965 15.8334 1.80965C16.1429 1.80965 16.4494 1.87061 16.7354 1.98906C17.0214 2.10752 17.2812 2.28113 17.5001 2.5C17.719 2.71887 17.8926 2.97871 18.011 3.26468C18.1295 3.55064 18.1904 3.85714 18.1904 4.16667C18.1904 4.4762 18.1295 4.7827 18.011 5.06866C17.8926 5.35463 17.719 5.61447 17.5001 5.83334L6.25008 17.0833L1.66675 18.3333L2.91675 13.75L14.1667 2.5Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>        
+            </a>
+            <a class="bg-red-500 hover:bg-red-600 m-1 p-4 rounded-xl self-center justify-self-center" href="/delete-task/{{task.id}}">
+                <svg width="14" height="20" viewBox="0 0 14 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3.66675 5V3.33333C3.66675 2.89131 3.84234 2.46738 4.1549 2.15482C4.46746 1.84226 4.89139 1.66667 5.33342 1.66667H8.66675C9.10878 1.66667 9.5327 1.84226 9.84526 2.15482C10.1578 2.46738 10.3334 2.89131 10.3334 3.33333V5M12.8334 5V16.6667C12.8334 17.1087 12.6578 17.5326 12.3453 17.8452C12.0327 18.1577 11.6088 18.3333 11.1667 18.3333H2.83341C2.39139 18.3333 1.96746 18.1577 1.6549 17.8452C1.34234 17.5326 1.16675 17.1087 1.16675 16.6667V5H12.8334Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>        
+            </a>
+        </div>
+</div>
+{% endfor %}
+
+{% endblock wrapper %}

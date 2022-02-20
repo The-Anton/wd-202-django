@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1 class="text-5xl font-bold mt-16">Todo Manager</h1><br />
+<h2 class="text-xl mt-6">Signup</h2><br />
+<form method="POST" action="">
+{% csrf_token %}
+    <div>
+        <p id="username" class="my-4">
+            {{form.username.label}}
+            <br />
+            {{form.username}}
+        </p>
+        <p id="password" class="mt-4 mb-6">
+            {{form.password1.label}}
+            <br />
+            {{form.password1}}
+        </p>
+
+        <p id="confirmPassword" class="my-4">
+            Confirm Password
+            <br />
+            {{form.password2}}
+        </p>
+        <br />
+        <button class="text-white bg-red-500 hover:bg-red-600 rounded-xl w-full p-3" action="submit">Sign Up</button>
+    </div>
+</form>
+{% endblock content %}
