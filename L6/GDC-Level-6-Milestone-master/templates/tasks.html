@@ -12,6 +12,7 @@
 {% for task in tasks %} {{forloop.counter}}. {{task.title}} {{task.created_date}} 
 <a href="/delete-task/{{task.id}}">delete task</a>&nbsp;
 <a href="/update-task/{{task.id}}">update task</a>&nbsp;
+<a href="/completed_task/{{task.id}}">mark as complete</a>&nbsp;
 <a href="/detail-task/{{task.id}}">details of the task</a></br>
 
 {% endfor %}

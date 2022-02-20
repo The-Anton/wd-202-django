@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2 class="text-4xl font-bold my-8">Create Todo</h2>
+<form action="/create-task/" method="post">
+  {% csrf_token %}
+  <div class="container m-2">
+    <p id="formTitle" class="my-2">
+        {{form.title.label}}
+        <br />
+        {{form.title}}
+    </p>
+    <p id="formPriority" class="my-2">
+      {{form.priority.label}}
+      <br />
+      {{form.priority}}
+    </p>
+    <p id="formDescription" class="my-1">
+      {{form.description.label}}
+      <br />
+      {{form.description}}
+    </p>
+    <p id="formCompleted" class="my-2">
+      {{form.completed}}&nbsp;
+      {{form.completed.label}}
+    </p>
+    <br />
+    <button class="text-white bg-red-500 hover:bg-red-600 rounded-xl w-full p-3" action="submit">Add</button>
+
+  </div>
+</form>
+{% endblock content %}

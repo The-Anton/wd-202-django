@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2 class="text-4xl text-red-600 font-bold mt-16 mb-3">Title -</h2>
+<p class="text-lg my-3">{{object.title}}</p>
+<div>
+  <h4 class="text-lg text-red-600 font-bold my-3">Created On -</h4>
+  {{object.created_date | date:"D d M"}}<br />
+  <h4 class="text-lg text-red-600 font-bold my-3">Priority -</h4> {{object.priority}}
+</div>
+<br />
+<h2 class="text-4xl text-red-600  font-bold my-3">Description -</h2>
+<p class="text-lg my-3">{{object.description}}</p>
+
+{% endblock content %}

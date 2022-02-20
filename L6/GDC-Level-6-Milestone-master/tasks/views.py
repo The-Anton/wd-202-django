@@ -63,10 +63,26 @@ class GenericTaskCreateView(CreateView):
     success_url = "/tasks"
 
     def form_valid(self, form):
+        task = Task.objects.all().filter(completed=False, priority=form.priority)
+        if task:
+            update_priority()
         self.object = form.save()
         self.object.user = self.request.user
         self.object.save()
         return HttpResponseRedirect(self.get_success_url())
+
+class GenericTaskCompleteView(LoginRequiredMixin, ListView):
+    queryset = Task.objects.all().filter(completed=True)
+    template_name = "completed.html"
+    context_objext_name = "completed_tasks"
+    paginate_by = 5
+
+class GenericTaskMarkCompletedView(LoginRequiredMixin, View):
+
+    def get_queryset(self, index):
+        Task.objects.filter(id=index).update(completed=True)
+        return HttpResponseRedirect("/tasks")
+
 class GenericTaskView(LoginRequiredMixin, ListView):
     queryset = Task.objects.filter(deleted=False)
     template_name = "tasks.html"
