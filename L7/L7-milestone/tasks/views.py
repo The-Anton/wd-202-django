@@ -15,8 +15,7 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.views.generic.list import ListView
 
 from tasks.models import Task
-
-
+from tasks.models import History
 def sessions_storage_view(request):
 
     total_views = request.session.get("total_views",0)
@@ -38,6 +37,10 @@ def priority_cascade(form, user):
 
     Task.objects.bulk_update(updated_conflicting_task, ["priority"])
 
+def status_change(self, form):
+    task = Task.objects.get(id=self.object.id)
+    task_history = History(old_status = task.status, new_status = form.cleaned_data["status"], task = self.object)
+    task_history.save()
 class UserCreationStyledForm(UserCreationForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -66,6 +69,7 @@ class TaskCreateFrom(ModelForm):
         self.fields["title"].widget.attrs["class"] = "p-3 my-2 w-full rounded-md bg-slate-100"
         self.fields["description"].widget.attrs["class"] = "p-3 my-2 w-full rounded-md bg-slate-100"
         self.fields["priority"].widget.attrs["class"] = "p-3 my-2 w-full rounded-md bg-slate-100"
+        self.fields["status"].widget.attrs["class"] = "p-3 my-2 w-full rounded-md bg-slate-100"
 
     def clean_title(self):
         title = self.cleaned_data["title"]
@@ -75,7 +79,7 @@ class TaskCreateFrom(ModelForm):
 
     class Meta:
         model = Task
-        fields = ["title", "description", "priority", "completed"]
+        fields = ["title", "description", "priority", "completed", "status"]
 
 class GenericTaskCreateView(CreateView):
     form_class = TaskCreateFrom
@@ -106,6 +110,9 @@ class GenericTaskUpdateView(AuthorisedTaskManager, UpdateView):
     def form_valid(self, form):
         priority_cascade(form, self.request.user)
         self.object = form.save(commit=False)
+
+        if "status" in form.changed_data:
+            status_change(self, form)
         self.object.save()
         return HttpResponseRedirect("/tasks")
 
@@ -145,47 +152,3 @@ class GenericAllTaskView(AuthorisedTaskManager, ListView):
     context_object_name = "tasks"
     paginate_by = 5
     
-class CreateTaskView(View):
-
-    def get(self, request):
-        return render(request, "task_create.html")
-
-    def post(self, request):
-        task_value = request.POST.get("task")
-        Task(title=task_value).save()
-        return HttpResponseRedirect("/tasks")
-class TaskView(View):
-
-    def get(self, request):
-        tasks = Task.objects.filter(deleted=False)
-        search_term = request.GET.get("search")
-
-        if search_term:
-            tasks = tasks.filter(title__icontains=search_term)
-        return render(request, "tasks.html", {"tasks": tasks})
-
-    def post(self, request):
-        pass
-
-def task_view(request):
-    tasks = Task.objects.filter(deleted=False)
-    search_term = request.GET.get("search")
-
-    if search_term:
-        tasks = tasks.filter(title__icontains=search_term)
-    return render(request, "tasks.html", {"tasks": tasks})  
-
-def delete_task_view(request, index):
-    Task.objects.filter(id=index).update(deleted=True)
-    return HttpResponseRedirect("/tasks")
-
-def done_task_view(request, index):
-    Task.objects.filter(id=index).update(completed=True)
-    return HttpResponseRedirect("/tasks")
-
-def completed_task_view(request):
-    completed_tasks = Task.objects.all().filter(completed=True)
-    return render(request, "completed.html", {"completed_tasks": completed_tasks})
-
-
-

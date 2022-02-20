@@ -1,10 +1,11 @@
 from asyncio import tasks
 from dataclasses import field
+from random import choices
 
 from django.contrib.auth.models import User
 from django.http.response import JsonResponse
 from django.views import View
-from django_filters.rest_framework import (BooleanFilter, CharFilter, ChoiceFilter, DateFilter,
+from django_filters.rest_framework import (BooleanFilter, CharFilter, ChoiceFilter, DateTimeFilter,
                                            DjangoFilterBackend, FilterSet)
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -12,15 +13,19 @@ from rest_framework.serializers import ModelSerializer
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
-from tasks.models import History, Task
+from tasks.models import History, Task, STATUS_CHOICES
 
 
 class TaskFilter(FilterSet):
     title = CharFilter(lookup_expr="icontains")
     completed = BooleanFilter(field_name="completed")
+    status = ChoiceFilter(field_name="status")
 
 class HistoryFilter(FilterSet):
-    change_time = DateFilter(field_name="change_time")
+    change_time = DateTimeFilter(field_name="change_time")
+    old_status = ChoiceFilter(choices=STATUS_CHOICES)
+    new_status = ChoiceFilter(choices=STATUS_CHOICES)
+
 
 class UserSerializer(ModelSerializer):
     class Meta:
