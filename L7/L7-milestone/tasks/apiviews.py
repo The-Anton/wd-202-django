@@ -58,6 +58,18 @@ class TaskViewSet(ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+    def perform_update(self, serializer):
+        new_status = serializer.validated_data["status"]
+        task = Task.objects.get(id=self.kwargs["pk"])
+        serializer.save()
+
+        if new_status != task.status:
+            task_history = History(old_status = task.status, new_status = new_status, task = task)
+            task_history.save()
+
+        
+
 class TaskHistoryViewSet(ReadOnlyModelViewSet):
     queryset = History.objects.all()
     serializer_class = HistorySerializer
